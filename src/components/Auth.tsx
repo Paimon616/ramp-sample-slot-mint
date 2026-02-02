@@ -23,7 +23,7 @@ function PinInput({ value, onChange, disabled, label }: PinInputProps) {
     return Array.from({ length: 4 }, (_, i) => value[i] || '')
   }
 
-  const handleChange = (index: number, inputValue: string) => {
+  const handleChange = (_index: number, inputValue: string) => {
     if (disabled) return
     
     // 숫자만 허용

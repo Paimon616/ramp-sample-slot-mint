@@ -28,11 +28,11 @@ const SYMBOL_WEIGHTS: Record<string, number> = {
 
 // 매칭 개수 확률표 (%)
 const MATCH_PROBABILITIES = {
-  0: 35,   // 매칭 없음: 35%
+  0: 30,   // 매칭 없음: 30%
   2: 25,   // 2개 매칭: 25%
   3: 20,   // 3개 매칭: 20%
-  4: 14,    // 4개 매칭: 14%
-  5: 1,    // 5개 매칭 (잭팟): 1%
+  4: 15,   // 4개 매칭: 15%
+  5: 10,   // 5개 매칭 (잭팟): 10%
 }
 
 // 3개 매칭 배수
@@ -160,7 +160,7 @@ function SlotMachine({ initialCredits = 1000, onCreditsChange, onWinConfirm }: S
   const [grid, setGrid] = useState<Grid>(() => generateGridFromResult({ matchCount: 0, symbol: null }))
   const [spinning, setSpinning] = useState(false)
   const [spinningReels, setSpinningReels] = useState<boolean[]>(Array(REELS).fill(false))
-  const [lastWin, setLastWin] = useState<number | null>(null)
+  const [_lastWin, setLastWin] = useState<number | null>(null)
   const [winResult, setWinResult] = useState<WinResult | null>(null)
   const [showPopup, setShowPopup] = useState(false)
   const [matchedPositions, setMatchedPositions] = useState<number[]>([])
