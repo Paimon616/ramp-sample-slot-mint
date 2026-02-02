@@ -1,0 +1,1194 @@
+/* 슬롯머신 메인 컨테이너 */
+.slot-machine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border-radius: 20px;
+  box-shadow: 
+    0 0 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(255, 215, 0, 0.1);
+  border: 3px solid #ffd700;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 효과 레벨에 따른 배경 애니메이션 */
+.slot-machine.effect-great {
+  animation: greatPulse 0.5s ease-in-out infinite alternate;
+}
+
+.slot-machine.effect-mega {
+  animation: megaPulse 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes greatPulse {
+  from { box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 60px rgba(255, 215, 0, 0.1); }
+  to { box-shadow: 0 0 60px rgba(255, 215, 0, 0.6), inset 0 0 80px rgba(255, 215, 0, 0.2); }
+}
+
+@keyframes megaPulse {
+  from { 
+    box-shadow: 0 0 50px rgba(255, 0, 100, 0.5), inset 0 0 80px rgba(255, 215, 0, 0.2);
+    border-color: #ff0064;
+  }
+  to { 
+    box-shadow: 0 0 100px rgba(255, 215, 0, 0.8), inset 0 0 100px rgba(255, 0, 100, 0.3);
+    border-color: #ffd700;
+  }
+}
+
+/* 슬롯 디스플레이 */
+.slot-display {
+  width: 100%;
+  max-width: 500px;
+}
+
+.slot-frame {
+  background: linear-gradient(180deg, #0d0d0d, #1a1a1a);
+  border-radius: 15px;
+  padding: 10px;
+  border: 2px solid #333;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+/* 딤 영역 */
+.dim-area {
+  position: relative;
+}
+
+.dim-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.dim-rows {
+  position: relative;
+}
+
+/* 슬롯 행 */
+.slot-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.slot-row.dim .slot-cell {
+  opacity: 0.5;
+  filter: grayscale(30%);
+}
+
+/* 슬롯 셀 */
+.slot-cell {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+  border-radius: 10px;
+  border: 2px solid #444;
+  transition: all 0.2s ease;
+}
+
+.slot-cell.spinning {
+  animation: spinBlur 0.1s linear infinite;
+}
+
+.slot-cell.spinning .symbol {
+  animation: symbolSpin 0.05s linear infinite;
+  filter: blur(2px);
+}
+
+@keyframes spinBlur {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes symbolSpin {
+  0% { transform: translateY(-100%); opacity: 0.5; }
+  50% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0.5; }
+}
+
+/* 메인 라인 (3행) */
+.main-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 0;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 215, 0, 0.1) 20%, 
+    rgba(255, 215, 0, 0.2) 50%, 
+    rgba(255, 215, 0, 0.1) 80%, 
+    transparent
+  );
+  margin: 10px 0;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* 2열 매칭 시 1회성 멋진 효과 */
+.main-line.match-flash {
+  animation: matchFlashEffect 0.6s ease-out forwards;
+}
+
+.main-line.match-flash::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(ellipse at center, 
+    rgba(0, 255, 136, 0.8) 0%, 
+    rgba(255, 215, 0, 0.6) 30%, 
+    rgba(255, 0, 100, 0.4) 60%, 
+    transparent 80%
+  );
+  border-radius: 20px;
+  z-index: -1;
+  animation: flashExpand 0.6s ease-out forwards;
+}
+
+.main-line.match-flash::after {
+  content: '✨ MATCH! ✨';
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 
+    0 0 10px #00ff88,
+    0 0 20px #ffd700,
+    0 0 30px #ff0064;
+  animation: matchTextPop 0.6s ease-out forwards;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+@keyframes matchFlashEffect {
+  0% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  20% {
+    transform: scale(1.05);
+    box-shadow: 
+      0 0 30px rgba(0, 255, 136, 0.8),
+      0 0 60px rgba(255, 215, 0, 0.6),
+      inset 0 0 30px rgba(0, 255, 136, 0.3);
+  }
+  40% {
+    transform: scale(1.02);
+    box-shadow: 
+      0 0 50px rgba(255, 0, 100, 0.7),
+      0 0 80px rgba(0, 255, 136, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+@keyframes flashExpand {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes matchTextPop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.2);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.8);
+  }
+}
+
+.payline-indicator {
+  color: #ffd700;
+  font-size: 24px;
+  padding: 0 10px;
+  text-shadow: 0 0 10px #ffd700;
+  animation: indicatorPulse 1s ease-in-out infinite;
+}
+
+@keyframes indicatorPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.slot-row.main {
+  flex: 0 0 auto;
+}
+
+.main-cell {
+  width: 80px;
+  height: 80px;
+  font-size: 50px;
+  background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+  border: 3px solid #ffd700;
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.main-cell.matched {
+  animation: matchGlow 0.5s ease-in-out infinite alternate;
+  border-color: #00ff88;
+}
+
+@keyframes matchGlow {
+  from {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5), inset 0 0 20px rgba(0, 255, 136, 0.2);
+    transform: scale(1);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.8), inset 0 0 30px rgba(0, 255, 136, 0.4);
+    transform: scale(1.05);
+  }
+}
+
+.main-cell.highlighted {
+  animation: highlightSpin 0.2s ease-in-out infinite;
+  border-color: #ff0064;
+  box-shadow: 
+    0 0 30px rgba(255, 0, 100, 0.8),
+    0 0 60px rgba(255, 0, 100, 0.4),
+    inset 0 0 30px rgba(255, 0, 100, 0.3);
+}
+
+.main-cell.highlighted.spinning {
+  animation: highlightSpin 0.1s ease-in-out infinite, spinBlur 0.05s linear infinite;
+}
+
+@keyframes highlightSpin {
+  0%, 100% { 
+    border-color: #ff0064;
+    box-shadow: 0 0 30px rgba(255, 0, 100, 0.8), 0 0 60px rgba(255, 0, 100, 0.4);
+  }
+  50% { 
+    border-color: #ffd700;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.4);
+  }
+}
+
+/* 흥분 상태 - 빠르게 도는 열 */
+.main-cell.excited {
+  animation: excitedGlow 0.15s ease-in-out infinite;
+  border-width: 4px;
+}
+
+.main-cell.excited.spinning {
+  animation: excitedGlow 0.1s ease-in-out infinite, fastSpin 0.03s linear infinite;
+}
+
+.main-cell.excited.spinning .symbol {
+  animation: fastSymbolSpin 0.025s linear infinite;
+  filter: blur(4px);
+}
+
+@keyframes excitedGlow {
+  0%, 100% { 
+    border-color: #ff0064;
+    box-shadow: 
+      0 0 30px rgba(255, 0, 100, 0.9),
+      0 0 60px rgba(255, 0, 100, 0.6),
+      0 0 90px rgba(255, 215, 0, 0.4),
+      inset 0 0 30px rgba(255, 0, 100, 0.3);
+    transform: scale(1.05);
+  }
+  50% { 
+    border-color: #ffd700;
+    box-shadow: 
+      0 0 40px rgba(255, 215, 0, 0.9),
+      0 0 80px rgba(255, 215, 0, 0.6),
+      0 0 120px rgba(255, 0, 100, 0.4),
+      inset 0 0 40px rgba(255, 215, 0, 0.3);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fastSpin {
+  0%, 100% { transform: translateY(-3px) scale(1.05); }
+  50% { transform: translateY(3px) scale(1.08); }
+}
+
+@keyframes fastSymbolSpin {
+  0% { transform: translateY(-150%); opacity: 0.3; }
+  50% { transform: translateY(0); opacity: 0.8; }
+  100% { transform: translateY(150%); opacity: 0.3; }
+}
+
+/* ============================================ */
+/* 승리 결과 팝업 */
+/* ============================================ */
+
+.win-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.win-popup-overlay.great {
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.2), rgba(0, 0, 0, 0.9));
+}
+
+.win-popup-overlay.mega {
+  background: radial-gradient(circle at center, rgba(255, 0, 100, 0.3), rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.9));
+  animation: fadeIn 0.3s ease-out, megaOverlayFlash 0.5s ease-in-out infinite;
+}
+
+@keyframes megaOverlayFlash {
+  0%, 100% { background: radial-gradient(circle at center, rgba(255, 0, 100, 0.3), rgba(0, 0, 0, 0.9)); }
+  50% { background: radial-gradient(circle at center, rgba(255, 215, 0, 0.4), rgba(255, 0, 100, 0.2), rgba(0, 0, 0, 0.9)); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.win-popup {
+  background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+  border-radius: 24px;
+  padding: 30px 40px;
+  min-width: 380px;
+  max-width: 90vw;
+  border: 3px solid #ffd700;
+  box-shadow: 
+    0 0 40px rgba(255, 215, 0, 0.4),
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 60px rgba(255, 215, 0, 0.05);
+  animation: popupSlideIn 0.4s ease-out;
+  text-align: center;
+}
+
+.win-popup.great {
+  border-color: #ffd700;
+  box-shadow: 
+    0 0 50px rgba(255, 215, 0, 0.5),
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 60px rgba(255, 215, 0, 0.1);
+}
+
+.win-popup.mega {
+  border-color: #ff0064;
+  animation: popupSlideIn 0.4s ease-out, megaPopupGlow 0.3s ease-in-out infinite alternate;
+  box-shadow: 
+    0 0 60px rgba(255, 0, 100, 0.6),
+    0 0 100px rgba(255, 215, 0, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 80px rgba(255, 0, 100, 0.1);
+}
+
+@keyframes popupSlideIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.5) translateY(50px); 
+  }
+  60% { 
+    transform: scale(1.05) translateY(-10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+@keyframes megaPopupGlow {
+  from {
+    border-color: #ff0064;
+    box-shadow: 
+      0 0 60px rgba(255, 0, 100, 0.6),
+      0 0 100px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    border-color: #ffd700;
+    box-shadow: 
+      0 0 80px rgba(255, 215, 0, 0.7),
+      0 0 120px rgba(255, 0, 100, 0.4);
+  }
+}
+
+/* 팝업 타이틀 */
+.popup-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 
+    0 0 20px #ffd700,
+    0 0 40px #ff8800;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.popup-title.great {
+  animation: titlePulse 0.5s ease-in-out infinite alternate;
+}
+
+.popup-title.mega {
+  font-size: 42px;
+  background: linear-gradient(90deg, #ff0064, #ffd700, #00ff88, #00ffff, #ff0064);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbowText 1s linear infinite, megaTitlePulse 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+@keyframes megaTitlePulse {
+  from { transform: scale(1); filter: brightness(1); }
+  to { transform: scale(1.1); filter: brightness(1.3); }
+}
+
+@keyframes rainbowText {
+  to { background-position: 200% center; }
+}
+
+.jackpot-emoji {
+  font-size: 32px;
+  animation: emojiSpin 1s ease-in-out infinite;
+}
+
+.popup-title.mega .jackpot-emoji {
+  font-size: 40px;
+  animation: emojiSpin 0.5s ease-in-out infinite;
+}
+
+@keyframes emojiSpin {
+  0%, 100% { transform: rotate(-10deg) scale(1); }
+  50% { transform: rotate(10deg) scale(1.2); }
+}
+
+.title-text {
+  display: inline-block;
+}
+
+.popup-subtitle {
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+/* 매칭 심볼 */
+.matched-symbols {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+}
+
+.matched-symbol {
+  font-size: 50px;
+  animation: symbolBounce 0.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.1s);
+}
+
+.matched-symbol:nth-child(1) { --i: 0; }
+.matched-symbol:nth-child(2) { --i: 1; }
+.matched-symbol:nth-child(3) { --i: 2; }
+.matched-symbol:nth-child(4) { --i: 3; }
+.matched-symbol:nth-child(5) { --i: 4; }
+
+@keyframes symbolBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.1); }
+}
+
+/* 계산 상세 */
+.calculation-details {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin: 20px 0;
+}
+
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 15px;
+}
+
+.calc-label {
+  color: #888;
+}
+
+.calc-value {
+  color: #fff;
+  font-weight: bold;
+}
+
+.calc-value.highlight {
+  color: #00ff88;
+  font-size: 18px;
+}
+
+.calc-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #444, transparent);
+  margin: 10px 0;
+}
+
+.calc-row.formula {
+  padding-top: 10px;
+}
+
+.calc-row.formula .calc-value {
+  color: #ffd700;
+  font-size: 14px;
+}
+
+/* 최종 금액 */
+.win-total {
+  margin: 25px 0;
+  padding: 20px;
+  background: linear-gradient(145deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.05));
+  border-radius: 15px;
+  border: 2px solid #00ff88;
+}
+
+.win-total.great {
+  animation: totalGlow 0.5s ease-in-out infinite alternate;
+}
+
+.win-total.mega {
+  background: linear-gradient(145deg, rgba(255, 0, 100, 0.2), rgba(255, 215, 0, 0.1));
+  border-color: #ff0064;
+  animation: megaTotalGlow 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes totalGlow {
+  from { box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
+  to { box-shadow: 0 0 40px rgba(0, 255, 136, 0.6); }
+}
+
+@keyframes megaTotalGlow {
+  from { 
+    box-shadow: 0 0 30px rgba(255, 0, 100, 0.5);
+    border-color: #ff0064;
+  }
+  to { 
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+    border-color: #ffd700;
+  }
+}
+
+.total-label {
+  display: block;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.total-amount {
+  display: block;
+  font-size: 42px;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+  animation: amountPop 0.5s ease-out;
+}
+
+.win-total.mega .total-amount {
+  font-size: 48px;
+  background: linear-gradient(90deg, #ff0064, #ffd700, #00ff88);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes amountPop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 닫기 버튼 */
+.close-popup-btn {
+  padding: 15px 50px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  background: linear-gradient(145deg, #ffd700, #ffaa00);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 5px 20px rgba(255, 215, 0, 0.4),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+  margin-top: 10px;
+}
+
+.close-popup-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 30px rgba(255, 215, 0, 0.6),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-popup-btn:active {
+  transform: translateY(0);
+}
+
+/* 정보 패널 */
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 25px;
+  background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+  border-radius: 15px;
+  border: 2px solid #444;
+  width: 100%;
+  max-width: 500px;
+}
+
+.bet-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.bet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.label {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.bet-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.bet-slider-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bet-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #333, #444);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.bet-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffd700, #ffaa00);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  transition: all 0.2s ease;
+}
+
+.bet-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+}
+
+.bet-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffd700, #ffaa00);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.bet-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bet-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+.bet-ratio-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 11px;
+  color: #666;
+}
+
+.ratio-btn {
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.ratio-btn:hover {
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.last-win {
+  padding: 8px 16px;
+  background: linear-gradient(145deg, #00ff88, #00aa55);
+  border-radius: 20px;
+  color: #000;
+  font-weight: bold;
+  font-size: 14px;
+  animation: lastWinPop 0.5s ease-out;
+}
+
+@keyframes lastWinPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* 스핀 버튼 */
+.spin-button {
+  padding: 20px 60px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+  background: linear-gradient(145deg, #ffd700, #ffaa00);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 5px 20px rgba(255, 215, 0, 0.4),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.spin-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 30px rgba(255, 215, 0, 0.6),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.spin-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.spin-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spin-button.spinning {
+  animation: buttonPulse 0.5s ease-in-out infinite;
+  background: linear-gradient(145deg, #ff8800, #ff6600);
+}
+
+@keyframes buttonPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* 토큰 민팅 버튼 */
+.mint-button {
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 5px 20px rgba(99, 102, 241, 0.4),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+  text-transform: none;
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+
+.mint-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 30px rgba(99, 102, 241, 0.6),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(145deg, #818cf8, #6366f1);
+}
+
+.mint-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mint-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 배당표 */
+.paytable {
+  padding: 15px 25px;
+  background: linear-gradient(145deg, #1a1a2a, #0d0d1a);
+  border-radius: 15px;
+  border: 2px solid #333;
+  width: 100%;
+  max-width: 500px;
+}
+
+.paytable h3 {
+  color: #ffd700;
+  text-align: center;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.paytable-items {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.paytable-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.paytable-item .symbol {
+  font-size: 28px;
+}
+
+.paytable-item .payout {
+  font-size: 14px;
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.multiplier-info {
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #333;
+}
+
+.multiplier-info p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+/* ============================================ */
+/* 모바일 반응형 (600px 미만, 390px 최적화) */
+/* ============================================ */
+@media (max-width: 600px) {
+  .slot-machine {
+    padding: 15px;
+    gap: 12px;
+    border-width: 2px;
+    border-radius: 15px;
+  }
+
+  .slot-display {
+    max-width: 100%;
+  }
+
+  .slot-frame {
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  /* 슬롯 셀 - 상단/하단 딤 영역 */
+  .slot-cell {
+    width: 52px;
+    height: 52px;
+    font-size: 28px;
+    border-radius: 8px;
+    border-width: 1.5px;
+  }
+
+  .slot-row {
+    gap: 5px;
+    padding: 3px 0;
+  }
+
+  /* 메인 라인 셀 */
+  .main-cell {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+
+  .main-line {
+    padding: 10px 0;
+    margin: 6px 0;
+  }
+
+  .payline-indicator {
+    font-size: 16px;
+    padding: 0 5px;
+  }
+
+  /* 정보 패널 */
+  .info-panel {
+    gap: 12px;
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+
+  .bet-control {
+    max-width: 100%;
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .bet-value {
+    font-size: 18px;
+  }
+
+  .bet-slider {
+    height: 6px;
+  }
+
+  .bet-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bet-ratio-labels {
+    font-size: 10px;
+  }
+
+  .ratio-btn {
+    padding: 3px 6px;
+  }
+
+  .last-win {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* 스핀 버튼 */
+  .spin-button {
+    padding: 14px 40px;
+    font-size: 20px;
+    border-radius: 40px;
+    letter-spacing: 2px;
+  }
+
+  /* 배당표 */
+  .paytable {
+    padding: 10px 12px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+
+  .paytable h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .paytable-items {
+    gap: 6px;
+  }
+
+  .paytable-item {
+    padding: 5px 8px;
+    border-radius: 6px;
+    gap: 3px;
+  }
+
+  .paytable-item .symbol {
+    font-size: 20px;
+  }
+
+  .paytable-item .payout {
+    font-size: 11px;
+  }
+
+  .multiplier-info {
+    margin-top: 10px;
+    padding-top: 8px;
+  }
+
+  .multiplier-info p {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  /* 승리 팝업 모바일 */
+  .win-popup {
+    padding: 20px 25px;
+    min-width: auto;
+    width: 90vw;
+    max-width: 350px;
+    border-radius: 18px;
+  }
+
+  .popup-title {
+    font-size: 26px;
+    gap: 10px;
+  }
+
+  .popup-title.mega {
+    font-size: 30px;
+  }
+
+  .jackpot-emoji {
+    font-size: 24px;
+  }
+
+  .popup-title.mega .jackpot-emoji {
+    font-size: 28px;
+  }
+
+  .popup-subtitle {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .matched-symbols {
+    gap: 6px;
+    margin: 15px 0;
+    padding: 10px;
+  }
+
+  .matched-symbol {
+    font-size: 36px;
+  }
+
+  .calculation-details {
+    padding: 10px 15px;
+    margin: 15px 0;
+  }
+
+  .calc-row {
+    font-size: 13px;
+    padding: 6px 0;
+  }
+
+  .calc-value.highlight {
+    font-size: 15px;
+  }
+
+  .calc-row.formula .calc-value {
+    font-size: 12px;
+  }
+
+  .win-total {
+    margin: 20px 0;
+    padding: 15px;
+  }
+
+  .total-label {
+    font-size: 12px;
+  }
+
+  .total-amount {
+    font-size: 32px;
+  }
+
+  .win-total.mega .total-amount {
+    font-size: 36px;
+  }
+
+  .close-popup-btn {
+    padding: 12px 40px;
+    font-size: 16px;
+  }
+
+  /* 매치 플래시 효과 모바일 조정 */
+  .main-line.match-flash::after {
+    font-size: 18px;
+    top: -40px;
+  }
+}
